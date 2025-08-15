@@ -3,7 +3,8 @@ const {Book} = require("../models/book");
 const { HttpError, ctrlWrapper } = require("../helpers");
 
 const getAll = async (req, res) => {
-    const result = await Book.find({}, "-createdAt -updatedAt");
+    const {_id, owner} = req.user;
+    const result = await Book.find({owner}, "-createdAt -updatedAt");
     res.json(result);
 }
 
@@ -18,7 +19,8 @@ const getById = async (req, res) => {
 }
 
 const add = async (req, res) => {
-    const result = await Book.create(req.body);
+    const {_id: owner} = req.user;
+    const result = await Book.create({...req.body, owner});
     res.status(201).json(result);
 }
 
@@ -50,6 +52,8 @@ const deleteById = async (req, res) => {
         message: "Delete success"
     })
 }
+
+
 
 module.exports = {
     getAll: ctrlWrapper(getAll),
